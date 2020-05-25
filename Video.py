@@ -5,7 +5,7 @@ import socket
 import time
 
 
-class Ty(object):
+class Video(object):
     def __init__(self):
 
         self.previous_frame = None
@@ -30,17 +30,17 @@ class Ty(object):
             _, frame = capture.read()
             ty = np.zeros(frame.shape, np.uint8)
 
-            if self.took_prev:
-                blended_frame = cv2.addWeighted(
-                    self.previous_frame, self.BLEND, frame, 1 - self.BLEND, 0
-                )
-            else:
-                blended_frame = frame
+            # if self.took_prev:
+            #     blended_frame = cv2.addWeighted(
+            #         self.previous_frame, self.BLEND, frame, 1 - self.BLEND, 0
+            #     )
+            # else:
+            #     blended_frame = frame
 
-            self.previous_frame = blended_frame
-            self.took_prev = True
+            blended_frame = frame
 
-            cv2.imshow("woah", blended_frame)
+            # self.previous_frame = blended_frame
+            # self.took_prev = True
 
             # Apply Gaussian blur
             blur = cv2.GaussianBlur(blended_frame, (1, 1), 0)
@@ -49,10 +49,11 @@ class Ty(object):
             rgb = cv2.cvtColor(blur, cv2.COLOR_BGR2RGB)
 
             self.drawPolygons(
-                rgb, ty, np.array([0, 0, 0]), np.array([80, 80, 80]), (0, 127, 255), 5
+                rgb, ty, np.array([0, 0, 0]), np.array([10, 10, 10]), (0, 127, 255), 5
             )
 
             cv2.imshow("JUICE", ty)
+            # cv2.imshow("shsrh", blended_frame)
 
             # Close the camera if 'q' is pressed
             if cv2.waitKey(1) == ord("q"):
@@ -87,4 +88,4 @@ class Ty(object):
             cv2.drawContours(canvas, [poly], 0, color, cv2.FILLED)
 
 
-Ty().run()
+Video().run()
