@@ -11,7 +11,7 @@ from FluctuatingValue import FluctuatingValue
 from PolygonEffect import PolygonEffect
 
 
-class Video(object):
+class EmbeddedVideo(object):
     def __init__(self):
 
         self.previous_frame = None
@@ -28,13 +28,19 @@ class Video(object):
         my POS mac has a bug where cv2.image() can only be called in the main thread https://github.com/swook/GazeML/issues/17
         because of this, my options for architecture are limited
         '''
+        # Open Camera
+        try:
+            self.default = 0  # Try Changing it to 1 if webcam not found
+            self.capture = cv2.VideoCapture(self.default)
+        except:
+            print("No Camera Source Found!")
+
         self.selected_audio_device = 0
         self.audio = Audio(self.selected_audio_device)
         self.audio.start()
 
         self.effects = []
 
-    def run(self):
         self.effects.append(
             PolygonEffect(
                 low_thresh=[
@@ -66,42 +72,18 @@ class Video(object):
             )
         )
 
-        # Open Camera
-        try:
-            default = 0  # Try Changing it to 1 if webcam not found
-            capture = cv2.VideoCapture(default)
-        except:
-            print("No Camera Source Found!")
+    def get_frame(self):
+        # Capture frames from the camera
+        _, frame = self.capture.read()
+        canvas = np.zeros(frame.shape, np.uint8)
 
-        while capture.isOpened():
+        # blend frame-to-frame (motion blur?)
+        blended_frame = self.blend_frames(frame)
 
-            # Capture frames from the camera
-            _, frame = capture.read()
-            canvas = np.zeros(frame.shape, np.uint8)
+        # draw stuff
+        self.draw(blended_frame, canvas)
 
-            # blend frame-to-frame (motion blur?)
-            blended_frame = self.blend_frames(frame)
-
-            # draw stuff
-            self.draw(blended_frame, canvas)
-
-            # show the canvas (must be in main thread because of dumb bug with Mac ~High sierra/Mohave)
-            cv2.namedWindow('wow', 16)
-            cv2.resizeWindow('wow', frame.shape[1], frame.shape[0])
-
-            cv2.createTrackbar('R', 'wow', 255, 255, lambda v: print(v))
-
-            cv2.imshow('wow', blended_frame)
-            # cv2.imshow('wow', canvas)
-
-            # Close the camera if 'q' is pressed
-            if cv2.waitKey(1) == ord("q"):
-                break
-
-        self.audio.stop = True
-        self.audio.join()
-        capture.release()
-        cv2.destroyAllWindows()
+        return canvas
 
     def draw(self, image, canvas):
         vol = self.audio.get_volume()
@@ -122,6 +104,3 @@ class Video(object):
 
             self.previous_frame = blended_frame
         return blended_frame
-
-
-Video().run()

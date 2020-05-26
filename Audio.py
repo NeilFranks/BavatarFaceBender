@@ -2,6 +2,7 @@ import audioop
 import pyaudio
 import queue
 import threading
+import time
 
 
 class Audio(threading.Thread):
@@ -31,14 +32,7 @@ class Audio(threading.Thread):
         STUFF TO WORK WITH
         '''
         self.p = pyaudio.PyAudio()
-        self.stream = self.p.open(
-            format=pyaudio.paInt16,
-            channels=2,
-            rate=self.samplerate,
-            input=True,
-            frames_per_buffer=self.chunk,
-            input_device_index=self.device,
-        )
+        self.start_stream()
 
         '''
         OUTPUTS
@@ -50,8 +44,14 @@ class Audio(threading.Thread):
             data = self.stream.read(self.chunk)
             self.calculate_volume(data, self.relativeVolume)
 
+    def change_device(self, new_device):
+        if new_device != self.device:
+            self.device = new_device
+            self.start_stream()
+
     def calculate_volume(self, data, relativeVol):
         volume = audioop.rms(data, 2)
+        print(volume)
         if volume < self.raw_min:
             self.raw_min = volume
         if volume > self.raw_max:
@@ -66,6 +66,16 @@ class Audio(threading.Thread):
 
     def get_volume(self):
         return self.volume
+
+    def start_stream(self):
+        self.stream = self.p.open(
+            format=pyaudio.paInt16,
+            channels=2,
+            rate=self.samplerate,
+            input=True,
+            frames_per_buffer=self.chunk,
+            input_device_index=self.device,
+        )
 
 
 # audio = Audio(2)
