@@ -51,7 +51,6 @@ class Audio(threading.Thread):
 
     def calculate_volume(self, data, relativeVol):
         volume = audioop.rms(data, 2)
-        print(volume)
         if volume < self.raw_min:
             self.raw_min = volume
         if volume > self.raw_max:
