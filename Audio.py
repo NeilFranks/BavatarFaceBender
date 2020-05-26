@@ -19,13 +19,8 @@ class Audio(threading.Thread):
         self.aScale = aScale
         self.exponent = exponent
 
-        if self.device == 2:
-            self.raw_min = 0
-            self.raw_max = 8582  # just my observed max and mins for system audio
-        else:
-            self.raw_min = float('inf')
-            self.raw_max = float('-inf')
-
+        self.raw_min = float('inf')
+        self.raw_max = float('-inf')
         self.relativeVolume = True  # if true, factors in raw_baseline when computing volume
 
         '''
@@ -48,6 +43,7 @@ class Audio(threading.Thread):
         if new_device != self.device:
             self.device = new_device
             self.start_stream()
+            self.reset_min_max()
 
     def calculate_volume(self, data, relativeVol):
         volume = audioop.rms(data, 2)
@@ -65,6 +61,14 @@ class Audio(threading.Thread):
 
     def get_volume(self):
         return self.volume
+
+    def reset_min_max(self):
+        if self.device == 2:
+            self.raw_min = 0
+            self.raw_max = 8582  # just my observed max and mins for system audio
+        else:
+            self.raw_min = float('inf')
+            self.raw_max = float('-inf')
 
     def start_stream(self):
         self.stream = self.p.open(
