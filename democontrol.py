@@ -45,8 +45,6 @@ class DemoControl(object):
     def get_frame(self):
         image = self.video.get_frame()
 
-
-s
         # OpenCV represents images in BGR order; however PIL represents
         # images in RGB order, so we need to swap the channels
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
