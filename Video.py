@@ -1,18 +1,15 @@
 import numpy as np
 import cv2
-import math
-import socket
 import threading
-import time
-from tkinter import *
 
 from Audio import Audio
 from FluctuatingValue import FluctuatingValue
 from PolygonEffect import PolygonEffect
 
 
-class Video(object):
-    def __init__(self):
+class Video(threading.Thread):
+    def __init__(self, selected_audio_device):
+        threading.Thread.__init__(self)
 
         self.previous_frame = None
         self.took_prev = False
@@ -24,13 +21,10 @@ class Video(object):
         self.BLUR_VERT = 1  # how much to blur the pixels together
 
         # STUFF TO USE
-        '''
-        my POS mac has a bug where cv2.image() can only be called in the main thread https://github.com/swook/GazeML/issues/17
-        because of this, my options for architecture are limited
-        '''
-        self.selected_audio_device = 0
+        self.selected_audio_device = selected_audio_device
         self.audio = Audio(self.selected_audio_device)
         self.audio.start()
+        self.stop = False  # set this to true to end the Video stream
 
         self.effects = []
 
@@ -70,11 +64,11 @@ class Video(object):
         try:
             default = 0  # Try Changing it to 1 if webcam not found
             capture = cv2.VideoCapture(default)
-        except:
+        except Exception as e:
             print("No Camera Source Found!")
+            print(e)
 
         while capture.isOpened():
-
             # Capture frames from the camera
             _, frame = capture.read()
             canvas = np.zeros(frame.shape, np.uint8)
@@ -84,18 +78,11 @@ class Video(object):
 
             # draw stuff
             self.draw(blended_frame, canvas)
-
-            # show the canvas (must be in main thread because of dumb bug with Mac ~High sierra/Mohave)
-            cv2.namedWindow('wow', 16)
-            cv2.resizeWindow('wow', frame.shape[1], frame.shape[0])
-
-            cv2.createTrackbar('R', 'wow', 255, 255, lambda v: print(v))
-
-            cv2.imshow('wow', blended_frame)
-            # cv2.imshow('wow', canvas)
+            cv2.imshow('wow', canvas)
 
             # Close the camera if 'q' is pressed
-            if cv2.waitKey(1) == ord("q"):
+            if self.stop or cv2.waitKey(1) == ord("q"):
+            # if self.stop:
                 break
 
         self.audio.stop = True
@@ -124,4 +111,4 @@ class Video(object):
         return blended_frame
 
 
-Video().run()
+# Video(0).run()

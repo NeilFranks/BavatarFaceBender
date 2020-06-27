@@ -1,8 +1,6 @@
 import audioop
 import pyaudio
-import queue
 import threading
-import time
 
 
 class Audio(threading.Thread):
