@@ -34,8 +34,7 @@ class Audio(threading.Thread):
 
     def run(self):
         while not self.stop:
-            data = self.stream.read(self.chunk)
-            self.calculate_volume(data, self.relativeVolume)
+            self.data = self.stream.read(self.chunk)
 
     def change_device(self, new_device):
         if new_device != self.device:
@@ -43,7 +42,10 @@ class Audio(threading.Thread):
             self.start_stream()
             self.reset_min_max()
 
-    def calculate_volume(self, data, relativeVol):
+    def calculate_volume(self):
+        data = self.data
+        relativeVol = self.relativeVolume
+
         volume = audioop.rms(data, 2)
         if volume < self.raw_min:
             self.raw_min = volume
@@ -56,17 +58,17 @@ class Audio(threading.Thread):
             volume = rel_volume/diff
 
         self.volume = volume
-
-    def get_volume(self):
-        return self.volume
+        return volume
 
     def reset_min_max(self):
-        if self.device == 2:
-            self.raw_min = 0
-            self.raw_max = 8582  # just my observed max and mins for system audio
-        else:
-            self.raw_min = float('inf')
-            self.raw_max = float('-inf')
+        self.raw_min = float('inf')
+        self.raw_max = float('-inf')
+        # if self.device == 2:
+        #     self.raw_min = 0
+        #     self.raw_max = 8582  # just my observed max and min for system audio
+        # else:
+        #     self.raw_min = float('inf')
+        #     self.raw_max = float('-inf')
 
     def start_stream(self):
         self.stream = self.p.open(

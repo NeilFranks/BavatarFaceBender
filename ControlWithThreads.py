@@ -1,4 +1,4 @@
-from tkinter import Tk, StringVar, OptionMenu
+from tkinter import Tk, Button, StringVar, OptionMenu
 import pyaudio
 
 from Video import Video
@@ -6,21 +6,19 @@ import PolygonControl
 
 
 class Control(object):
-    def __init__(self, frame_rate=25):
-        self.frame_rate = frame_rate
-
+    def __init__(self):
         # setup devices
         self.audio_devices = []
         self.clicked_audio_device = None  # will be the name of the device
-        self.selected_audio_device = 2  # will be the number of the device
+        self.selected_audio_device = 1  # will be the number of the device
 
         self.root = Tk()
-        self.root.configure(bg='black')
+        # self.root.configure(bg='black')
         self.video = Video(self.selected_audio_device)
         self.video.start()
 
-        # load control panel
         self.load_controls()
+        self.exit_setup()
 
         self.root.mainloop()
 
@@ -51,7 +49,7 @@ class Control(object):
             *options,
             command=self.change_device
         )
-        drop.config(bg='black', fg='white')
+        # drop.config(bg='black', fg='white')
         return drop
 
     def get_selected_audio_device(self):
@@ -68,8 +66,20 @@ class Control(object):
         for device in self.audio_devices:
             if device[0] == device_name:
                 selected_audio_device = device[1]
-        print(selected_audio_device)
+        # print(selected_audio_device)
         self.video.audio.change_device(selected_audio_device)
+
+    def exit_setup(self):
+        self.root.protocol("WM_DELETE_WINDOW", self.exit)
+
+        exit_button = Button(self.root, text='Exit', command=self.exit)
+        # exit_button.config(bg='black', fg='white')
+        exit_button.pack(padx=100, pady=100)
+
+    def exit(self):
+        self.video.stop = True
+        self.video.join()
+        self.root.destroy()
 
 
 Control()

@@ -69,6 +69,8 @@ class Video(threading.Thread):
             print(e)
 
         while capture.isOpened():
+            cv2.waitKey(1)
+
             # Capture frames from the camera
             _, frame = capture.read()
             canvas = np.zeros(frame.shape, np.uint8)
@@ -77,12 +79,17 @@ class Video(threading.Thread):
             blended_frame = self.blend_frames(frame)
 
             # draw stuff
-            self.draw(blended_frame, canvas)
+            self.draw(blended_frame, canvas, self.audio.calculate_volume)
             cv2.imshow('wow', canvas)
 
-            # Close the camera if 'q' is pressed
-            if self.stop or cv2.waitKey(1) == ord("q"):
-            # if self.stop:
+            wub = cv2.getWindowProperty('wow', 2)
+            if wub != 4/3:
+                print(wub)
+
+            if wub == -1:
+                self.stop = True
+
+            if self.stop:
                 break
 
         self.audio.stop = True
@@ -90,11 +97,9 @@ class Video(threading.Thread):
         capture.release()
         cv2.destroyAllWindows()
 
-    def draw(self, image, canvas):
-        vol = self.audio.get_volume()
-
+    def draw(self, image, canvas, func):
         for effect in self.effects:
-            effect.fluctate(vol)
+            effect.fluctate(func())
             effect.draw(image, canvas, self.BLUR_HOR, self.BLUR_VERT)
 
     def blend_frames(self, frame):
