@@ -10,10 +10,9 @@ class Control(object):
         # setup devices
         self.audio_devices = []
         self.clicked_audio_device = None  # will be the name of the device
-        self.selected_audio_device = 1  # will be the number of the device
+        self.selected_audio_device = 2  # will be the number of the device
 
         self.root = Tk()
-        # self.root.configure(bg='black')
         self.video = Video(self.selected_audio_device)
         self.video.start()
 

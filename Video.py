@@ -28,11 +28,8 @@ class Video(threading.Thread):
         self.audio.start()
         self.stop = False  # set this to true to end the Video stream
 
-        # self.effects = []
-
     def run(self):
-        # self.effects.append(
-        #     PolygonEffect(
+        # effects["uhhh"] = PolygonEffect(
         #         low_thresh=[
         #             FluctuatingValue(0, 0, 220, True, lambda frac,
         #                              whole: frac*whole),
@@ -60,12 +57,12 @@ class Video(threading.Thread):
         #         epsilon=FluctuatingValue(5, 1, 11, True,
         #                                  lambda frac, whole: frac*whole)
         #     )
-        # )
 
         # Open Camera
         try:
             default = 0  # Try Changing it to 1 if webcam not found
             capture = cv2.VideoCapture(default)
+            capture.set(cv2.CAP_PROP_EXPOSURE, -1)  # disable auto-exposure. under expose in order to get high shutter speed
         except Exception as e:
             print("No Camera Source Found!")
             print(e)
@@ -84,12 +81,7 @@ class Video(threading.Thread):
             self.draw(blended_frame, canvas, self.audio.calculate_volume)
             cv2.imshow('wow', canvas)
 
-            # wub = cv2.getWindowProperty('wow', 2)
-            # if wub != 4/3:
-            #     print(wub)
-
-            # if wub == -1:
-            #     self.stop = True
+            # cv2.imshow('wow', blended_frame)
 
             if self.stop:
                 break
@@ -103,13 +95,19 @@ class Video(threading.Thread):
         # func will be something like calculating volume
 
         # for effect in self.effects:
-        for effect in effects.values():
-            effect.fluctate(func())
-            effect.draw(image, canvas, self.BLUR_HOR, self.BLUR_VERT)
+        try:
+            vals = effects.values()
+            for effect in vals:
+                effect.fluctate(func())
+                effect.draw(image, canvas, self.BLUR_HOR, self.BLUR_VERT)
+        except Exception as e:
+            # lol, dict probably needs to be threadsafe. check the exception
+            print(e)
 
     def blend_frames(self, frame):
         blended_frame = frame
         if self.blend_on:
+            print("wtfff")
             if self.took_prev:
                 blended_frame = cv2.addWeighted(
                     self.previous_frame, self.BLEND, frame, 1 - self.BLEND, 0

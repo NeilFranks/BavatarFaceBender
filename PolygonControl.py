@@ -3,13 +3,12 @@ from tkinter.ttk import Notebook, Separator
 from FluctuatingValue import FluctuatingValue
 from FluctuatingValueControl import fluct
 from PolygonEffect import PolygonEffect
-import uuid
 from Video import effects
+
 
 class PolygonControl(object):
     def __init__(self, root):
         self.tabs = Notebook(root)
-        self.secret = "oh wow ok!"
 
         tab1 = Frame(self.tabs)
         tab2 = Frame(self.tabs)
@@ -18,12 +17,14 @@ class PolygonControl(object):
         self.tabs.add(tab1, text="Tab One")
         self.tabs.add(tab2, text="Tab Two")
         self.tabs.add(tab3, text="Tab Three")
-        self.tab(tab1)
+        self.tab(tab1, "tab1")
+        self.tab(tab2, "tab2")
+        self.tab(tab3, "tab3")
         self.tabs.pack()
 
     class tab(object):
-        def __init__(self, root):
-            self.uuid = str(uuid.uuid4())
+        def __init__(self, root, name):
+            self.name = name
             self.titles(root)
 
             Label(root, text="Low Threshold").grid(row=2, column=0)
@@ -47,7 +48,7 @@ class PolygonControl(object):
             Button(root, text="activate", command=self.activate).grid(row=14, column=0)
 
         def activate(self):
-            effects[self.uuid] = PolygonEffect(
+            effects[self.name] = PolygonEffect(
                 low_thresh=self.get_RGB(self.low_thresh),
                 hi_thresh=self.get_RGB(self.hi_thresh),
                 color=self.get_RGB(self.color),
@@ -61,7 +62,7 @@ class PolygonControl(object):
                         self.epsilon.value.high_value.get_value(),
                         self.epsilon.value.fluctuate.get_value(),
                         self.epsilon.value.function.get_value()
-                    ) 
+                ) 
 
         def get_RGB(self, attr):
             return [
