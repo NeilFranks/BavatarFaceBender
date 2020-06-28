@@ -43,6 +43,8 @@ class Audio(threading.Thread):
             self.reset_min_max()
 
     def calculate_volume(self):
+        # this method SHOULD return a fraction between 0 and 1.
+        # Fluctuating values kinda depend on that
         data = self.data
         relativeVol = self.relativeVolume
 

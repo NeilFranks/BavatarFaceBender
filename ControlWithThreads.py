@@ -1,8 +1,8 @@
-from tkinter import Tk, Button, StringVar, OptionMenu
+from tkinter import Tk, StringVar, OptionMenu
 import pyaudio
 
 from Video import Video
-import PolygonControl
+from PolygonControl import PolygonControl
 
 
 class Control(object):
@@ -24,7 +24,7 @@ class Control(object):
 
     def load_controls(self):
         self.devices_dropdown().pack()
-        PolygonControl.effect(self).pack()
+        PolygonControl(self.root)
 
     def devices_dropdown(self):
         # list audio input devices
@@ -72,9 +72,9 @@ class Control(object):
     def exit_setup(self):
         self.root.protocol("WM_DELETE_WINDOW", self.exit)
 
-        exit_button = Button(self.root, text='Exit', command=self.exit)
-        # exit_button.config(bg='black', fg='white')
-        exit_button.pack(padx=100, pady=100)
+        # exit_button = Button(self.root, text='Exit', command=self.exit)
+        # # exit_button.config(bg='black', fg='white')
+        # exit_button.pack(padx=100, pady=100)
 
     def exit(self):
         self.video.stop = True

@@ -2,16 +2,14 @@ import cv2
 import numpy as np
 import threading
 
-from FluctuatingValue import FluctuatingValue
-
 
 class PolygonEffect(object):
     def __init__(self, low_thresh, hi_thresh, color, epsilon):
         self.enabled = True
-        self.low_thresh = low_thresh
-        self.hi_thresh = hi_thresh
-        self.color = color
-        self.epsilon = epsilon
+        self.low_thresh = low_thresh  # low end of what colors will make up the contour
+        self.hi_thresh = hi_thresh  # high end of what colors will make up the contour
+        self.color = color  # the color the contour will be filled with
+        self.epsilon = epsilon  # epsilon is like length of the lines
 
     def disable(self):
         self.enabled = False

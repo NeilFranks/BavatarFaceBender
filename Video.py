@@ -6,6 +6,8 @@ from Audio import Audio
 from FluctuatingValue import FluctuatingValue
 from PolygonEffect import PolygonEffect
 
+effects = {}
+
 
 class Video(threading.Thread):
     def __init__(self, selected_audio_device):
@@ -26,39 +28,39 @@ class Video(threading.Thread):
         self.audio.start()
         self.stop = False  # set this to true to end the Video stream
 
-        self.effects = []
+        # self.effects = []
 
     def run(self):
-        self.effects.append(
-            PolygonEffect(
-                low_thresh=[
-                    FluctuatingValue(0, 0, 220, True, lambda frac,
-                                     whole: frac*whole),
-                    FluctuatingValue(0, 0, 220, True, lambda frac,
-                                     whole: frac*whole),
-                    FluctuatingValue(0, 0, 220, True, lambda frac,
-                                     whole: frac*whole),
-                ],
-                hi_thresh=[
-                    FluctuatingValue(80, 80, 255, True, lambda frac,
-                                     whole: frac*whole),
-                    FluctuatingValue(80, 80, 255, True, lambda frac,
-                                     whole: frac*whole),
-                    FluctuatingValue(80, 80, 255, True, lambda frac,
-                                     whole: frac*whole),
-                ],
-                color=(
-                    FluctuatingValue(50, 0, 255, True,
-                                     lambda frac, whole: frac*whole),
-                    FluctuatingValue(50, 0, 255, True,
-                                     lambda frac, whole: frac*whole),
-                    FluctuatingValue(50, 0, 255, True,
-                                     lambda frac, whole: frac*whole),
-                ),
-                epsilon=FluctuatingValue(5, 1, 11, True,
-                                         lambda frac, whole: frac*whole)
-            )
-        )
+        # self.effects.append(
+        #     PolygonEffect(
+        #         low_thresh=[
+        #             FluctuatingValue(0, 0, 220, True, lambda frac,
+        #                              whole: frac*whole),
+        #             FluctuatingValue(0, 0, 220, True, lambda frac,
+        #                              whole: frac*whole),
+        #             FluctuatingValue(0, 0, 220, True, lambda frac,
+        #                              whole: frac*whole),
+        #         ],
+        #         hi_thresh=[
+        #             FluctuatingValue(80, 80, 255, True, lambda frac,
+        #                              whole: frac*whole),
+        #             FluctuatingValue(80, 80, 255, True, lambda frac,
+        #                              whole: frac*whole),
+        #             FluctuatingValue(80, 80, 255, True, lambda frac,
+        #                              whole: frac*whole),
+        #         ],
+        #         color=(
+        #             FluctuatingValue(50, 0, 255, True,
+        #                              lambda frac, whole: frac*whole),
+        #             FluctuatingValue(50, 0, 255, True,
+        #                              lambda frac, whole: frac*whole),
+        #             FluctuatingValue(50, 0, 255, True,
+        #                              lambda frac, whole: frac*whole),
+        #         ),
+        #         epsilon=FluctuatingValue(5, 1, 11, True,
+        #                                  lambda frac, whole: frac*whole)
+        #     )
+        # )
 
         # Open Camera
         try:
@@ -82,12 +84,12 @@ class Video(threading.Thread):
             self.draw(blended_frame, canvas, self.audio.calculate_volume)
             cv2.imshow('wow', canvas)
 
-            wub = cv2.getWindowProperty('wow', 2)
-            if wub != 4/3:
-                print(wub)
+            # wub = cv2.getWindowProperty('wow', 2)
+            # if wub != 4/3:
+            #     print(wub)
 
-            if wub == -1:
-                self.stop = True
+            # if wub == -1:
+            #     self.stop = True
 
             if self.stop:
                 break
@@ -98,7 +100,10 @@ class Video(threading.Thread):
         cv2.destroyAllWindows()
 
     def draw(self, image, canvas, func):
-        for effect in self.effects:
+        # func will be something like calculating volume
+
+        # for effect in self.effects:
+        for effect in effects.values():
             effect.fluctate(func())
             effect.draw(image, canvas, self.BLUR_HOR, self.BLUR_VERT)
 
