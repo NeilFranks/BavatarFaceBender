@@ -21,7 +21,7 @@ class Video(threading.Thread):
         self.BLEND = 0.6  # how much to blend frame to frame
         self.BLUR_HOR = 1  # how much to blur the pixels together
         self.BLUR_VERT = 1  # how much to blur the pixels together
-
+        self.SHOW_REAL_PICTURE = False  # if true, just show real webcam feed
         # STUFF TO USE
         self.selected_audio_device = selected_audio_device
         self.audio = Audio(self.selected_audio_device)
@@ -78,10 +78,11 @@ class Video(threading.Thread):
             blended_frame = self.blend_frames(frame)
 
             # draw stuff
-            self.draw(blended_frame, canvas, self.audio.calculate_volume)
-            cv2.imshow('wow', canvas)
-
-            # cv2.imshow('wow', blended_frame)
+            if self.SHOW_REAL_PICTURE:
+                cv2.imshow('wow', blended_frame)
+            else:
+                self.draw(blended_frame, canvas, self.audio.calculate_volume)
+                cv2.imshow('wow', canvas)
 
             if self.stop:
                 break
@@ -107,7 +108,6 @@ class Video(threading.Thread):
     def blend_frames(self, frame):
         blended_frame = frame
         if self.blend_on:
-            print("wtfff")
             if self.took_prev:
                 blended_frame = cv2.addWeighted(
                     self.previous_frame, self.BLEND, frame, 1 - self.BLEND, 0
@@ -115,7 +115,7 @@ class Video(threading.Thread):
             else:
                 self.took_prev = True
 
-            self.previous_frame = blended_frame
+        self.previous_frame = blended_frame
         return blended_frame
 
 

@@ -1,4 +1,4 @@
-from tkinter import Tk, StringVar, OptionMenu
+from tkinter import Tk, Checkbutton, Entry, Frame, LEFT, RIGHT, StringVar, IntVar, OptionMenu
 import pyaudio
 
 from Video import Video
@@ -23,7 +23,44 @@ class Control(object):
 
     def load_controls(self):
         self.devices_dropdown().pack()
+        self.blur_check_button().pack()
+        self.show_real_picture_check_button().pack()
         PolygonControl(self.root)
+
+    def show_real_picture_check_button(self):
+        self.show_real_picture = IntVar()
+        c = Checkbutton(self.root, variable=self.show_real_picture, text="show real picture", command=self.toggle_real_picture)
+        return c
+
+    def toggle_real_picture(self):
+        self.video.SHOW_REAL_PICTURE = self.show_real_picture.get()
+
+    def blur_check_button(self):
+        frame = Frame(self.root)
+
+        sv = StringVar()
+        sv.set("0")
+        sv.trace("w", lambda name, index, mode, sv=sv: self.change_blur_amount(sv))
+        Entry(frame, textvariable=sv).pack(side=LEFT)
+
+        self.blur_check = IntVar()
+        Checkbutton(frame, variable=self.blur_check, text="motion blur", command=self.toggle_blur).pack(side=RIGHT)    
+        return frame
+
+    def change_blur_amount(self, sv):
+        try:
+            amount = float(sv.get())
+            if amount < 0:
+                sv.set(0)
+            elif amount > 1:
+                sv.set(1)
+            self.video.BLEND = float(sv.get())
+        except Exception as e:
+            print(e)
+            sv.set("0")
+
+    def toggle_blur(self):
+        self.video.blend_on = self.blur_check.get()
 
     def devices_dropdown(self):
         # list audio input devices
