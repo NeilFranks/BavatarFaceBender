@@ -30,7 +30,7 @@ class fluct(object):
                     self.v.set(self.high)
             except Exception as e:
                 self.v.set(self.low)
-            
+
             return int(self.v.get())
 
     class fluctuate_check(object):
