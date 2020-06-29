@@ -6,7 +6,7 @@ from PolygonEffect import PolygonEffect
 from Video import effects
 
 import json
-import pickle
+import utils
 
 
 class Tab(object):
@@ -76,7 +76,8 @@ class Tab(object):
         )
 
     def save(self):
-        print(json.dumps(self.to_dict()))
+        # print(json.dumps(self.to_dict()))
+        utils.save(self.name.get(), json.dumps(self.to_dict()))
 
     def to_dict(self):
         return {
