@@ -1,4 +1,4 @@
-from tkinter import Frame, Tk
+from tkinter import Tk
 from tkinter.ttk import Notebook
 from Tab import Tab
 

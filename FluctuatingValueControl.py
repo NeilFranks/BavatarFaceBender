@@ -1,7 +1,7 @@
 from tkinter import Entry, StringVar, Checkbutton, IntVar, OptionMenu
 
 
-class fluct(object):
+class FluctuatingValueControl(object):
     def __init__(self, root, row, column):
         self.row = row
         self.initial_value = self.num_entry(root, row, column)
@@ -10,18 +10,27 @@ class fluct(object):
         self.fluctuate = self.fluctuate_check(root, row, column + 3)
         self.function = self.function(root, row, column + 4)
 
+    def to_dict(self):
+        return {
+            "initial value": self.initial_value.get_value(),
+            "low value": self.low_value.get_value(),
+            "high value": self.high_value.get_value(),
+            "fluctuate": self.fluctuate.get_value(),
+            "function": self.function.get_key()
+        }
+
     class num_entry(object):
         def __init__(self, root, row, column):
             self.low = 0
             self.high = 255
 
             self.v = StringVar()
-            self.e = Entry(root, textvariable=self.v, width=3)
+            self.e = Entry(root, textvariable=self.v, width=3, validate="focusout", validatecommand=self.validate)
             self.e.grid(row=row, column=column)
 
             self.v.set(self.low)
 
-        def get_value(self):
+        def validate(self):
             try:
                 val = int(self.v.get())
                 if val < self.low:
@@ -30,7 +39,11 @@ class fluct(object):
                     self.v.set(self.high)
             except Exception as e:
                 self.v.set(self.low)
+            finally:
+                return True
 
+        def get_value(self):
+            self.validate()
             return int(self.v.get())
 
     class fluctuate_check(object):
@@ -64,6 +77,9 @@ class fluct(object):
                 *options
             )
             self.o.grid(row=row, column=column)
+
+        def get_key(self):
+            return self.v.get()
 
         def get_value(self):
             return self.functions[self.v.get()]

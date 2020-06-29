@@ -1,10 +1,11 @@
 from tkinter import Button, Entry, Frame, Label, LEFT, RIGHT, StringVar
 from tkinter.ttk import Separator
 from FluctuatingValue import FluctuatingValue
-from FluctuatingValueControl import fluct
+from FluctuatingValueControl import FluctuatingValueControl
 from PolygonEffect import PolygonEffect
 from Video import effects
 
+import json
 import pickle
 
 
@@ -24,17 +25,17 @@ class Tab(object):
         self.titles(self.root, row=1)
 
         Label(self.root, text="Low Threshold").grid(row=3, column=0)
-        self.low_thresh = self.color(self.root, row=2, column=1)
+        self.low_thresh = self.color_widget(self.root, row=2, column=1)
 
         Separator(self.root, orient="horizontal").grid(row=5, sticky="ew", columnspan=7)
 
         Label(self.root, text="High Threshold").grid(row=7, column=0)
-        self.hi_thresh = self.color(self.root, row=6, column=1)
+        self.hi_thresh = self.color_widget(self.root, row=6, column=1)
 
         Separator(self.root, orient="horizontal").grid(row=9, sticky="ew", columnspan=7)
 
         Label(self.root, text="Color").grid(row=11, column=0)
-        self.color = self.color(self.root, row=10, column=1)
+        self.color = self.color_widget(self.root, row=10, column=1)
 
         Separator(self.root, orient="horizontal").grid(row=13, sticky="ew", columnspan=7)
 
@@ -67,7 +68,7 @@ class Tab(object):
         return frame
 
     def activate(self):
-        effects[self.name] = PolygonEffect(
+        effects[self.name.get()] = PolygonEffect(
             low_thresh=self.get_RGB(self.low_thresh),
             hi_thresh=self.get_RGB(self.hi_thresh),
             color=self.get_RGB(self.color),
@@ -75,8 +76,16 @@ class Tab(object):
         )
 
     def save(self):
-        serialized = pickle.dumps(self)
-        print(serialized)
+        print(json.dumps(self.to_dict()))
+
+    def to_dict(self):
+        return {
+            "name": self.name.get(),
+            "low thresh": self.low_thresh.to_dict(),
+            "high thresh": self.hi_thresh.to_dict(),
+            "color": self.color.to_dict(),
+            "epsilon": self.epsilon.to_dict()
+        }
 
     def get_epsilon(self):
         return FluctuatingValue(
@@ -85,7 +94,7 @@ class Tab(object):
                     self.epsilon.value.high_value.get_value(),
                     self.epsilon.value.fluctuate.get_value(),
                     self.epsilon.value.function.get_value()
-            ) 
+            )
 
     def get_RGB(self, attr):
         return [
@@ -110,16 +119,28 @@ class Tab(object):
         Label(root, text="enabled").grid(row=row, column=5)
         Label(root, text="function").grid(row=row, column=6)
 
-    class color(object):
+    class color_widget(object):
         def __init__(self, root, row, column):
             Label(root, text="R").grid(row=row, column=column)
             Label(root, text="G").grid(row=row+1, column=column)
             Label(root, text="B").grid(row=row+2, column=column)
 
-            self.red = fluct(root, row=row, column=column+1)
-            self.green = fluct(root, row=row+1, column=column+1)
-            self.blue = fluct(root, row=row+2, column=column+1)
+            self.red = FluctuatingValueControl(root, row=row, column=column+1)
+            self.green = FluctuatingValueControl(root, row=row+1, column=column+1)
+            self.blue = FluctuatingValueControl(root, row=row+2, column=column+1)
+
+        def to_dict(self):
+            return {
+                "red": self.red.to_dict(),
+                "green": self.red.to_dict(),
+                "blue": self.red.to_dict(),
+            }
 
     class epsilon(object):
         def __init__(self, root, row, column):
-            self.value = fluct(root, row=row, column=column+1)
+            self.value = FluctuatingValueControl(root, row=row, column=column+1)
+
+        def to_dict(self):
+            return {
+                "value": self.value.to_dict(),
+            }
