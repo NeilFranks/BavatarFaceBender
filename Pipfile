@@ -10,9 +10,6 @@ autopep8 = "*"
 [packages]
 opencv-python = "==3.4.9.33"
 pyaudio = "*"
-pygame = "*"
-pillow = "*"
-pyqt5 = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

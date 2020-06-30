@@ -1,4 +1,3 @@
-from tkinter import Tk
 from tkinter.ttk import Notebook
 from Tab import Tab
 
@@ -18,8 +17,3 @@ class PolygonControl(object):
             tab.load_tab()
 
         self.notebook.pack()
-
-
-root = Tk()
-PolygonControl(root)
-root.mainloop()

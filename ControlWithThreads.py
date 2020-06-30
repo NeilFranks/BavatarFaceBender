@@ -1,8 +1,8 @@
 from tkinter import Tk, Checkbutton, Entry, Frame, LEFT, RIGHT, StringVar, IntVar, OptionMenu
 import pyaudio
 
-from Video import Video
 from PolygonControl import PolygonControl
+from Video import Video
 
 
 class Control(object):
@@ -116,6 +116,3 @@ class Control(object):
         self.video.stop = True
         self.video.join()
         self.root.destroy()
-
-
-Control()
