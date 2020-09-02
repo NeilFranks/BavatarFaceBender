@@ -51,7 +51,7 @@ class EmbeddedVideo(object):
                     FluctuatingValue(0, 0, 220, True, lambda frac,
                                      whole: frac*whole),
                 ],
-                hi_thresh=[
+                high_thresh=[
                     FluctuatingValue(80, 80, 255, True, lambda frac,
                                      whole: frac*whole),
                     FluctuatingValue(80, 80, 255, True, lambda frac,

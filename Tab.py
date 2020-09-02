@@ -2,7 +2,6 @@ from tkinter import Button, Entry, Frame, Label, LEFT, RIGHT, OptionMenu, String
 from tkinter.ttk import Separator
 from FluctuatingValue import FluctuatingValue
 from PolygonEffect import PolygonEffect
-from Video import effects
 from ColorWidget import color_widget
 from Epsilon import epsilon
 
@@ -33,7 +32,7 @@ class Tab(object):
         Separator(self.root, orient="horizontal").grid(row=5, sticky="ew", columnspan=7)
 
         Label(self.root, text="High Threshold").grid(row=7, column=0)
-        self.hi_thresh = color_widget(self.root, row=6, column=1)
+        self.high_thresh = color_widget(self.root, row=6, column=1)
 
         Separator(self.root, orient="horizontal").grid(row=9, sticky="ew", columnspan=7)
 
@@ -73,9 +72,9 @@ class Tab(object):
         return frame
 
     def activate(self):
-        effects[self.name.get()] = PolygonEffect(
+        utils.effects[self.name.get()] = PolygonEffect(
             low_thresh=self.get_RGB(self.low_thresh),
-            hi_thresh=self.get_RGB(self.hi_thresh),
+            high_thresh=self.get_RGB(self.high_thresh),
             color=self.get_RGB(self.color),
             epsilon=self.get_epsilon()
         )
@@ -84,7 +83,7 @@ class Tab(object):
         data_object = json.loads(utils.load(self.file_to_load.get()))
         self.name.set(data_object["name"])
         self.low_thresh.from_dict(data_object["low thresh"])
-        self.hi_thresh.from_dict(data_object["high thresh"])
+        self.high_thresh.from_dict(data_object["high thresh"])
         self.color.from_dict(data_object["color"])
         self.epsilon.from_dict(data_object["epsilon"])
 
@@ -95,18 +94,22 @@ class Tab(object):
         return {
             "name": self.name.get(),
             "low thresh": self.low_thresh.to_dict(),
-            "high thresh": self.hi_thresh.to_dict(),
+            "high thresh": self.high_thresh.to_dict(),
             "color": self.color.to_dict(),
             "epsilon": self.epsilon.to_dict()
         }
 
     def get_epsilon(self):
         return FluctuatingValue(
-                    self.epsilon.value.initial_value.get_value(),
-                    self.epsilon.value.low_value.get_value(),
-                    self.epsilon.value.high_value.get_value(),
-                    self.epsilon.value.fluctuate.get_value(),
-                    self.epsilon.value.function.get_value()
+                    initial_val=self.epsilon.value.initial_value.get_value(),
+                    low_val=self.epsilon.value.low_value.get_value(),
+                    high_val=self.epsilon.value.high_value.get_value(),
+                    min_freq=self.epsilon.value.min_freq_entry.get_value(),
+                    max_freq=self.epsilon.value.max_freq_entry.get_value(),
+                    min_level=self.epsilon.value.min_level_entry.get_value(),
+                    max_level=self.epsilon.value.max_level_entry.get_value(),
+                    function=self.epsilon.value.function.get_value(),
+                    fluctuate_on=self.epsilon.value.fluctuate.get_value()
             )
 
     def get_RGB(self, attr):
@@ -118,11 +121,15 @@ class Tab(object):
 
     def get_fluct_for_color(self, color):
         return FluctuatingValue(
-                    color.initial_value.get_value(),
-                    color.low_value.get_value(),
-                    color.high_value.get_value(),
-                    color.fluctuate.get_value(),
-                    color.function.get_value()
+                    initial_val=color.initial_value.get_value(),
+                    low_val=color.low_value.get_value(),
+                    high_val=color.high_value.get_value(),
+                    min_freq=color.min_freq_entry.get_value(),
+                    max_freq=color.max_freq_entry.get_value(),
+                    min_level=color.min_level_entry.get_value(),
+                    max_level=color.max_level_entry.get_value(),
+                    function=color.function.get_value(),
+                    fluctuate_on=color.fluctuate.get_value()
                 )
 
     def titles(self, root, row):

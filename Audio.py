@@ -4,10 +4,11 @@ import numpy as np
 import pyaudio as pa
 import threading
 import settings
+import utils
 
 
 class Audio(threading.Thread):
-    def __init__(self, device, chunk=2**14, samplerate=44100, aScale=100, exponent=1):
+    def __init__(self, device, aScale=100, exponent=1):
         threading.Thread.__init__(self)
         self.stop = False  # set true to end thread
 
@@ -15,8 +16,8 @@ class Audio(threading.Thread):
         INPUTS
         '''
         self.device = device
-        self.chunk = chunk
-        self.samplerate = samplerate
+        self.chunk = settings.CHUNK_SIZE
+        self.samplerate = settings.SAMPLE_RATE
         self.aScale = aScale
         self.exponent = exponent
 
@@ -31,11 +32,10 @@ class Audio(threading.Thread):
         self.start_stream()
 
         # fft things
-        self.hz_index_constant = samplerate/chunk  # for conversion
         self.min_freq = settings.MIN_FREQ  # in Hz. don't bother with any frequencies below this
         self.max_freq = settings.MAX_FREQ  # in Hz. don't bother with any frequencies above this
-        self.fft_start_index = math.floor(self.hz_to_index(self.min_freq))
-        self.fft_end_index = math.ceil(self.hz_to_index(self.max_freq))
+        self.fft_start_index = math.floor(utils.hz_to_index(self.min_freq))
+        self.fft_end_index = math.ceil(utils.hz_to_index(self.max_freq))
 
         '''
         OUTPUTS
@@ -74,15 +74,8 @@ class Audio(threading.Thread):
         return volume
 
     def fft(self):
-        arr = np.fromstring(self.data, np.int16)
-        fft_out = 10.0 * np.log10(abs(np.fft.rfft(arr)))
-        self.fft_out = fft_out[self.fft_start_index:self.fft_end_index]
-
-    def hz_to_index(self, hz):
-        return hz/self.hz_index_constant
-
-    def index_to_hz(self, index):
-        return index*self.hz_index_constant
+        arr = np.fromstring(self.data, np.int16) 
+        utils.fft_out = 10.0 * np.log10(abs(np.fft.rfft(arr)))[self.fft_start_index:self.fft_end_index]
 
     def reset_min_max(self):
         self.raw_min = float('inf')

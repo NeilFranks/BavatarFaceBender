@@ -4,10 +4,10 @@ import threading
 
 
 class PolygonEffect(object):
-    def __init__(self, low_thresh, hi_thresh, color, epsilon):
+    def __init__(self, low_thresh, high_thresh, color, epsilon):
         self.enabled = True
         self.low_thresh = low_thresh  # low end of what colors will make up the contour
-        self.hi_thresh = hi_thresh  # high end of what colors will make up the contour
+        self.high_thresh = high_thresh  # high end of what colors will make up the contour
         self.color = color  # the color the contour will be filled with
         self.epsilon = epsilon  # epsilon is like length of the lines
 
@@ -18,7 +18,7 @@ class PolygonEffect(object):
         mask = cv2.inRange(
             image,
             np.array(self.get_low_thresh()),
-            np.array(self.get_hi_thresh())
+            np.array(self.get_high_thresh())
         )
 
         # Kernel for morphological transformation
@@ -42,11 +42,11 @@ class PolygonEffect(object):
             poly = cv2.approxPolyDP(contour, self.get_epsilon(), True)
             cv2.drawContours(canvas, [poly], 0, self.get_color(), cv2.FILLED)
 
-    def fluctate(self, fraction):
-        t1 = threading.Thread(target=self.fluc_low_thresh, args=(fraction,))
-        t2 = threading.Thread(target=self.fluc_hi_thresh, args=(fraction,))
-        t3 = threading.Thread(target=self.fluc_color, args=(fraction,))
-        t4 = threading.Thread(target=self.fluc_epsilon, args=(fraction,))
+    def fluctate(self):
+        t1 = threading.Thread(target=self.fluc_low_thresh)
+        t2 = threading.Thread(target=self.fluc_high_thresh)
+        t3 = threading.Thread(target=self.fluc_color)
+        t4 = threading.Thread(target=self.fluc_epsilon)
 
         t1.start()
         t2.start()
@@ -57,23 +57,23 @@ class PolygonEffect(object):
         t3.join()
         t4.join()
 
-    def fluc_low_thresh(self, fraction):
-        self.low_thresh[0].fluctuate(fraction)
-        self.low_thresh[1].fluctuate(fraction)
-        self.low_thresh[2].fluctuate(fraction)
+    def fluc_low_thresh(self):
+        self.low_thresh[0].fluctuate()
+        self.low_thresh[1].fluctuate()
+        self.low_thresh[2].fluctuate()
 
-    def fluc_hi_thresh(self, fraction):
-        self.hi_thresh[0].fluctuate(fraction)
-        self.hi_thresh[1].fluctuate(fraction)
-        self.hi_thresh[2].fluctuate(fraction)
+    def fluc_high_thresh(self):
+        self.high_thresh[0].fluctuate()
+        self.high_thresh[1].fluctuate()
+        self.high_thresh[2].fluctuate()
 
-    def fluc_color(self, fraction):
-        self.color[0].fluctuate(fraction)
-        self.color[1].fluctuate(fraction)
-        self.color[2].fluctuate(fraction)
+    def fluc_color(self):
+        self.color[0].fluctuate()
+        self.color[1].fluctuate()
+        self.color[2].fluctuate()
 
-    def fluc_epsilon(self, fraction):
-        self.epsilon.fluctuate(fraction)
+    def fluc_epsilon(self):
+        self.epsilon.fluctuate()
 
     def get_low_thresh(self):
         return [
@@ -82,11 +82,11 @@ class PolygonEffect(object):
             self.low_thresh[2].get()
         ]
 
-    def get_hi_thresh(self):
+    def get_high_thresh(self):
         return [
-            self.hi_thresh[0].get(),
-            self.hi_thresh[1].get(),
-            self.hi_thresh[2].get()
+            self.high_thresh[0].get(),
+            self.high_thresh[1].get(),
+            self.high_thresh[2].get()
         ]
 
     def get_color(self):

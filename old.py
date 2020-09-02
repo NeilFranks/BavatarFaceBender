@@ -27,7 +27,7 @@ DCQueue = queue.Queue(DCRollLength)
 
 # for peak detection
 dfft = []
-dfftLength = 2048
+dfftLength = 1000
 dfftLengthLog2 = np.log2(dfftLength)
 compareLength = 7
 debugPeak = False
@@ -74,7 +74,7 @@ def drawLevels(values):
         some_limit = 10
         if values[x] > some_limit:
             pygame.draw.rect(display, (255, 255, 255), Rect(
-                x * width / N, height - (values[x] - some_limit)**1, 2, 2))
+                x * width / N, height - (values[x] - some_limit)**(1.5), 2, 2))
 
 
 def drawShape(scale):

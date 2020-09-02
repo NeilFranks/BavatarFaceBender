@@ -7,7 +7,7 @@ class int_entry(object):
         self.high = high
 
         self.v = IntVar()
-        self.e = Entry(root, textvariable=self.v, width=3, validate="focusout", validatecommand=self.validate)
+        self.e = Entry(root, textvariable=self.v, width=5, validate="focusout", validatecommand=self.validate)
         self.e.grid(row=row, column=column)
 
         self.v.set(self.low)

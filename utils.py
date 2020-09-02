@@ -1,8 +1,15 @@
 import os.path
+import settings
 
 FOLDER_NAME = "\effects"
 
 
+# GLOBALS TO ENABLE MY ANTIPATTERNS
+effects = {}
+fft_out = []
+
+
+# FOR FILE STORAGE
 def save(name, body):
     f = folder()
     if not os.path.isdir(f):
@@ -34,3 +41,12 @@ def list_files():
 
 def folder():
     return os.getcwd()+FOLDER_NAME
+
+
+# FOR AUDIO
+def hz_to_index(hz):
+    return round(hz/settings.HZ_INDEX_CONSTANT)
+
+
+def index_to_hz(index):
+    return index*settings.HZ_INDEX_CONSTANT

@@ -3,10 +3,7 @@ import cv2
 import threading
 
 from Audio import Audio
-from FluctuatingValue import FluctuatingValue
-from PolygonEffect import PolygonEffect
-
-effects = {}
+import utils
 
 
 class Video(threading.Thread):
@@ -18,10 +15,11 @@ class Video(threading.Thread):
 
         # SETTINGS
         self.blend_on = False  # whether or not to blend frame to frame
-        self.BLEND = 0.6  # how much to blend frame to frame
+        self.BLEND = 0.8  # how much to blend frame to frame
         self.BLUR_HOR = 1  # how much to blur the pixels together
         self.BLUR_VERT = 1  # how much to blur the pixels together
         self.SHOW_REAL_PICTURE = False  # if true, just show real webcam feed
+
         # STUFF TO USE
         self.selected_audio_device = selected_audio_device
         self.audio = Audio(self.selected_audio_device)
@@ -29,35 +27,6 @@ class Video(threading.Thread):
         self.stop = False  # set this to true to end the Video stream
 
     def run(self):
-        # effects["uhhh"] = PolygonEffect(
-        #         low_thresh=[
-        #             FluctuatingValue(0, 0, 220, True, lambda frac,
-        #                              whole: frac*whole),
-        #             FluctuatingValue(0, 0, 220, True, lambda frac,
-        #                              whole: frac*whole),
-        #             FluctuatingValue(0, 0, 220, True, lambda frac,
-        #                              whole: frac*whole),
-        #         ],
-        #         hi_thresh=[
-        #             FluctuatingValue(80, 80, 255, True, lambda frac,
-        #                              whole: frac*whole),
-        #             FluctuatingValue(80, 80, 255, True, lambda frac,
-        #                              whole: frac*whole),
-        #             FluctuatingValue(80, 80, 255, True, lambda frac,
-        #                              whole: frac*whole),
-        #         ],
-        #         color=(
-        #             FluctuatingValue(50, 0, 255, True,
-        #                              lambda frac, whole: frac*whole),
-        #             FluctuatingValue(50, 0, 255, True,
-        #                              lambda frac, whole: frac*whole),
-        #             FluctuatingValue(50, 0, 255, True,
-        #                              lambda frac, whole: frac*whole),
-        #         ),
-        #         epsilon=FluctuatingValue(5, 1, 11, True,
-        #                                  lambda frac, whole: frac*whole)
-        #     )
-
         # Open Camera
         try:
             default = 0  # Try Changing it to 1 if webcam not found
@@ -79,10 +48,10 @@ class Video(threading.Thread):
 
             # draw stuff
             if self.SHOW_REAL_PICTURE:
-                cv2.imshow('wow', blended_frame)
+                cv2.imshow('B A V A T A R', blended_frame)
             else:
-                self.draw(blended_frame, canvas, self.audio.calculate_volume)
-                cv2.imshow('wow', canvas)
+                self.draw(blended_frame, canvas)
+                cv2.imshow('B A V A T A R', canvas)
 
             if self.stop:
                 break
@@ -90,16 +59,13 @@ class Video(threading.Thread):
         self.audio.stop = True
         self.audio.join()
         capture.release()
-        cv2.destroyAllWindows()
+        cv2.destroyAllWindoFws()
 
-    def draw(self, image, canvas, func):
-        # func will be something like calculating volume
-
-        # for effect in self.effects:
+    def draw(self, image, canvas):
         try:
-            vals = effects.values()
+            vals = utils.effects.values()
             for effect in vals:
-                effect.fluctate(func())
+                effect.fluctate()
                 effect.draw(image, canvas, self.BLUR_HOR, self.BLUR_VERT)
         except Exception as e:
             # lol, dict probably needs to be threadsafe. check the exception
@@ -117,6 +83,3 @@ class Video(threading.Thread):
 
         self.previous_frame = blended_frame
         return blended_frame
-
-
-# Video(0).run()
